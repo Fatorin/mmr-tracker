@@ -1,0 +1,22 @@
+# Go 相關
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Log
+*.log
+
+# Docker 相關（視情況）
+docker-compose.override.yml
+.env

@@ -1,0 +1,13 @@
+.git
+.gitignore
+Dockerfile
+README.md
+*.md
+node_modules
+vendor
+*.log
+*.tmp
+*.cache
+dist
+build
+tmp
