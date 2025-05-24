@@ -7,11 +7,13 @@
     <title>Match History</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
+        .table_custom {
+            --bs-table-bg: transparent !important;
+        }
+
         .servant-thumbnail {
             width: 64px;
             height: 64px;
-            border-radius: 3px;
-            margin-right: 1rem;
             vertical-align: middle;
             object-fit: cover;
         }
@@ -104,22 +106,34 @@
             card.className = 'card mb-3';
 
             card.innerHTML = `
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Match ID: ${match.id}</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text"><strong>Map:</strong> ${mapName}</p>
-                        <p class="card-text"><strong>DateTime:</strong> ${formatDateTime(match.datetime)}</p>
-                        <p class="card-text"><strong>Duration:</strong> ${formatDuration(match.duration)}</p>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                ${teamADetails}
-                            </div>
-                            <div class="col-md-6">
-                                ${teamBDetails}
-                            </div>
+                <div class="card-header">
+                <table class="table table_custom table-borderless mb-0">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Match ID</th>
+                            <td>${match.id}</td>
+                            <th scope="row">Map</th>
+                            <td>${mapName}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">DateTime</th>
+                            <td>${formatDateTime(match.datetime)}</td>
+                            <th scope="row">Duration</th>
+                            <td>${formatDuration(match.duration)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <div class="card-body">                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            ${teamADetails}
+                        </div>
+                        <div class="col-md-6">
+                            ${teamBDetails}
                         </div>
                     </div>
+                </div>
                 `;
             matchContainer.appendChild(card);
         });
@@ -129,30 +143,39 @@
         if (!servants || servants.length === 0) return `<p>No servants for ${teamName} (Score: ${score})</p>`;
 
         let table = `
-                <table class="table table-sm table-bordered align-middle">
-                    <thead>
-                        <tr>
-                            <th colspan="4" class="text-center bg-light">${teamName} (Score: ${score})</th>
-                        </tr>
-                        <tr>
-                            <th>User</th>
-                            <th>Servant</th>
-                            <th>Level</th>
-                            <th>KDA</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+            <table class="table table-sm table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th colspan="5" class="text-center bg-light">${teamName} (Score: ${score})</th>
+                </tr>
+                <tr>
+                    <th class="col-4">User</th>
+                    <th class="col-2">Servant</th>
+                    <th class="col-2">Level</th>
+                    <th class="col-2">KDA</th>
+                    <th class="col-2">Avg</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
         servants.forEach(servant => {
+            const avg = servant.Deaths === 0 ? (servant.Kills + servant.Assists) : ((servant.Kills + servant.Assists) / servant.Deaths);
+            const formattedAvg = avg.toFixed(1);
+
             table += `
-                    <tr>
-                        <td>${servant.UserName}</td>
-                        <td><img src="${getServantImgUrl(servant.Name)}" alt="${servant.Name}" onerror="fallbackImg(this)" class="servant-thumbnail">${servant.Name}</td>
-                        <td>${servant.Level}</td>
-                        <td>${servant.Kills}/${servant.Deaths}/${servant.Assists}</td>
-                    </tr>
-                `;
+            <tr>
+                <td>${servant.UserName}</td>
+                <td class="text-center">
+                    <img src="${getServantImgUrl(servant.Name)}" alt="${servant.Name}" onerror="fallbackImg(this)" class="servant-thumbnail img-fluid" />
+                </td>
+                <td>${servant.Level}</td>
+                <td class="font-monospace">${servant.Kills}/${servant.Deaths}/${servant.Assists}</td>
+                <td>${formattedAvg}</td>
+            </tr>
+            `;
         });
+
         table += '</tbody></table>';
         return table;
     }
@@ -167,8 +190,8 @@
         nextLink.parentElement.classList.toggle('disabled', offset + limit >= totalItems);
     }
 
-    function formatDateTime(isoString) {
-        const date = new Date(isoString);
+    function formatDateTime(time) {
+        const date = new Date(time);
         return date.toLocaleString();
     }
 
