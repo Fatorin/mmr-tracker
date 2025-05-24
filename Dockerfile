@@ -25,8 +25,9 @@ WORKDIR /root/
 # 複製編譯好的執行檔
 COPY --from=builder /app/main .
 
-# 複製 templates 資料夾
+# 複製資料夾
 COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/assets ./assets
 
 # 容器啟動時執行的指令
 CMD ["./main"]
