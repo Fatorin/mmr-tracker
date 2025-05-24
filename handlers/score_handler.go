@@ -1,18 +1,17 @@
 package handlers
 
 import (
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/fatorin/mmr-tracker/database"
 	"github.com/fatorin/mmr-tracker/models"
+	"github.com/fatorin/mmr-tracker/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func GetScores(c *gin.Context) {
-	// 取得參數
 	category := c.Query("category")
 	server := c.Query("server")
 	name := c.Query("name")
@@ -42,7 +41,7 @@ func GetScores(c *gin.Context) {
 
 	// 查詢條件
 	conditions := []string{"1=1"}
-	args := []interface{}{}
+	args := []any{}
 
 	if category != "" {
 		conditions = append(conditions, "category = ?")
@@ -59,7 +58,6 @@ func GetScores(c *gin.Context) {
 
 	whereClause := strings.Join(conditions, " AND ")
 
-	// 查詢資料
 	query := `
 		SELECT id, name, score
 		FROM scores
@@ -75,7 +73,6 @@ func GetScores(c *gin.Context) {
 		return
 	}
 
-	// 查詢總筆數
 	countQuery := `SELECT COUNT(*) FROM scores WHERE ` + whereClause
 	var total int
 	if err := database.DB.Get(&total, countQuery, args[:len(args)-2]...); err != nil {
@@ -83,12 +80,8 @@ func GetScores(c *gin.Context) {
 		return
 	}
 
-	// 計算分頁資訊
-	pages := int(math.Ceil(float64(total) / float64(limit)))
-	currentPage := (offset / limit) + 1
-	hasNext := offset+limit < total
+	pages, currentPage, hasNext := utils.Paginate(total, limit, offset)
 
-	// 回傳
 	c.JSON(http.StatusOK, models.PaginationResult[models.Score]{
 		Total:   total,
 		Limit:   limit,
