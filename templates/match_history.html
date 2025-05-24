@@ -190,9 +190,18 @@
         nextLink.parentElement.classList.toggle('disabled', offset + limit >= totalItems);
     }
 
+    /**
+     * 將輸入的時間字串視為東八區（+08:00）時間，  
+     * 調整成對應的UTC時間，  
+     * 並以本地格式字串輸出。  
+     * 
+     * 參數 time 範例： '2025-05-25T03:52:20Z'（實際是 +08:00 時區時間但被錯誤標示為 UTC）  
+     * 返回值：本地格式時間字串  
+     */
     function formatDateTime(time) {
         const date = new Date(time);
-        return date.toLocaleString();
+        const dateUTC = new Date(date.getTime() - 8 * 60 * 60 * 1000);
+        return dateUTC.toLocaleString();
     }
 
     function formatDuration(seconds) {
