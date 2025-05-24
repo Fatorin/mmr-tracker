@@ -7,6 +7,14 @@
     <title>Match History</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
+        .servant-thumbnail {
+            width: 64px;
+            height: 64px;
+            border-radius: 3px;
+            margin-right: 1rem;
+            vertical-align: middle;
+            object-fit: cover;
+        }
     </style>
 </head>
 
@@ -45,13 +53,12 @@
                 <ul class="pagination">
                     <li class="page-item"><a class="page-link" href="#" id="prev-page">Previous</a></li>
                     <li class="page-item disabled"><a class="page-link" href="#">Page <span id="current-page">1</span>
-                                of <span id="total-pages">1</span></a></li>
+                            of <span id="total-pages">1</span></a></li>
                     <li class="page-item"><a class="page-link" href="#" id="next-page">Next</a></li>
                 </ul>
             </nav>
         </div>
     </main>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
@@ -122,16 +129,16 @@
         if (!servants || servants.length === 0) return `<p>No servants for ${teamName} (Score: ${score})</p>`;
 
         let table = `
-                <table class="table table-sm table-bordered">
+                <table class="table table-sm table-bordered align-middle">
                     <thead>
                         <tr>
                             <th colspan="4" class="text-center bg-light">${teamName} (Score: ${score})</th>
                         </tr>
                         <tr>
                             <th>User</th>
-                            <th>Name</th>
+                            <th>Servant</th>
                             <th>Level</th>
-                            <th>K/D/A</th>
+                            <th>KDA</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -140,7 +147,7 @@
             table += `
                     <tr>
                         <td>${servant.UserName}</td>
-                        <td>${servant.Name}</td>
+                        <td><img src="${getServantImgUrl(servant.Name)}" alt="${servant.Name}" onerror="fallbackImg(this)" class="servant-thumbnail">${servant.Name}</td>
                         <td>${servant.Level}</td>
                         <td>${servant.Kills}/${servant.Deaths}/${servant.Assists}</td>
                     </tr>
@@ -188,6 +195,40 @@
             fetchMatches();
         }
     });
+</script>
+<script>
+    const servantImageUrls = {
+        "Gilles de Rais": "Gilles.jpg",
+        "Cu Chulainn": "CuChulainn.jpg",
+        "SasakiKojirou": "Sasaki.jpg",
+        "Artoria.Alter": "ArtoriaAlter.jpg",
+        "Jack the Ripper": "Jack.jpg",
+        "Li Shuwen": "Lee.jpg",
+        "Vlad III": "Vlad.jpg",
+        "Nursery Rhymes": "Nursery.jpg",
+        "Avenger (F/HA)": "Angra.jpg",
+        "Caster": "Tamamo.jpg",
+        "Erzsébet": "Elizabeth.jpg",
+        "Scáthach": "Scatach.jpg",
+        "ScÃ¡thach": "Scatach.jpg",
+        "Angra Mainyu": "Angra.jpg",
+        "HassanKing": "KingHassan.jpg",
+        "Frankenstein": "Frank.jpg",
+        "Ryougi Shiki": "Ryougi.jpg",
+        "Avenger": "Edmond.jpg",
+    };
+
+    const baseUrl = "/assets/img/";
+    function getServantImgUrl(name) {
+        const fileName = servantImageUrls[name] || `${name}.jpg`;
+        const fullUrl = baseUrl + fileName;
+        return fullUrl
+    }
+
+    function fallbackImg(img) {
+        img.onerror = null;
+        img.src = "https://placehold.co/64";
+    }
 </script>
 
 </html>
